@@ -1,0 +1,25 @@
+{
+  "name": "api_dev",
+  "version": "1.0.0",
+  "description": "\"this is for api dev from basics to advance\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Adii0904/ExpressJS-API_DEV.git"
+  },
+  "author": "\"aditya\"",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Adii0904/ExpressJS-API_DEV/issues"
+  },
+  "homepage": "https://github.com/Adii0904/ExpressJS-API_DEV#readme",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.13.2"
+  }
+}
