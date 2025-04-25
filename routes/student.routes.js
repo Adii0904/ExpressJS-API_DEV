@@ -1,7 +1,38 @@
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
 const Student = require("../models/student.model");
+
+//setting our multers;
+
+const storage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, "./uploads");
+  },
+  filename: (req, file, callback) => {
+    const newFilename = Date.now() + path.extname(file.originalname);
+    callback(null, newFilename);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true);
+  } else {
+    cb(new Error("only images are allowed"), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 1024 * 1024 * 3, //3mb
+  },
+});
 
 //doing with all routes;
 
@@ -28,9 +59,14 @@ router.get("/:id", async (req, res) => {
 });
 
 //add  new student;
-router.post("/", async (req, res) => {
+router.post("/", upload.single("pic_url"), async (req, res) => {
   try {
-    const newStudent = await Student.create(req.body);
+    const student = new Student(req.body);
+    // const newStudent = await Student.create(req.body);
+    if (req.file) {
+      student.pic_url = req.file.filename;
+    }
+    const newStudent = await student.save();
     res.status(201).json(newStudent);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -63,6 +99,7 @@ router.delete("/:id", async (req, res) => {
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
+    res.json({ message: "message not found" });
 
     res.json({ message: "user deleted Successfully" });
   } catch (err) {
