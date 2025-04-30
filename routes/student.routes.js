@@ -8,6 +8,7 @@ const Student = require("../models/student.model");
 
 //setting our multers;
 
+//esme ham set karte hain ki image uplaod kaha hoga
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
     callback(null, "./uploads");
@@ -64,6 +65,7 @@ router.post("/", upload.single("pic_url"), async (req, res) => {
     const student = new Student(req.body);
     // const newStudent = await Student.create(req.body);
     if (req.file) {
+      //ye user se jo file aati hain usko ham req.file se milta hain
       student.pic_url = req.file.filename;
     }
     const newStudent = await student.save();
@@ -85,8 +87,15 @@ router.put("/:id", async (req, res) => {
     if (!updateStudent) {
       return res.status(404).json({ message: "not found User" });
     }
+    if (updateStudent.pic_url) {
+      const filepath = path.join("../uploads", updateStudent.pic_url);
+      //to delte the file path in database of pic url folder image;
+      fs.unlink(filepath, (err) => {
+        console.log("failed to delter", err);
+      });
+    }
 
-    res.json(updateStudent);
+    res.json({ message: "picture is deleted successfully" });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -99,7 +108,16 @@ router.delete("/:id", async (req, res) => {
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
-    res.json({ message: "message not found" });
+    if (student.pic_url) {
+      const filename = path.join("../uploads", student.pic_url);
+
+      //uplink ka use ham delete karne ke liye karte hain.
+      fs.unlink(filename, (err) => {
+        if (err) {
+          console.log(err, "failed to deleted");
+        }
+      });
+    }
 
     res.json({ message: "user deleted Successfully" });
   } catch (err) {
